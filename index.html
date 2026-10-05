@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赫奇帕奇學院作品集入口 | Hufflepuff Portfolio Hub</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts: Cinzel, Noto Serif TC & Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Serif+TC:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        hufflepuff: {
+                            yellow: '#ECB939',
+                            gold: '#F0C75E',
+                            lightGold: '#FFF0B8',
+                            darkGold: '#B8860B',
+                            black: '#1A1815',
+                            darkSoil: '#23201B',
+                            brown: '#3D3021',
+                            warmBrown: '#5C4033',
+                            leafGreen: '#2D5A27',
+                            softGreen: '#4E8046',
+                            parchment: '#2A251E',
+                            parchmentLight: '#383228',
+                            borderGold: '#9A7B38',
+                        }
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        serifTC: ['Noto Serif TC', 'serif'],
+                        playfair: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Noto Serif TC', 'Cinzel', serif;
+            background-color: #12100E;
+            color: #EBDCB9;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 15%, rgba(236, 185, 57, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 85% 85%, rgba(45, 90, 39, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 15% 75%, rgba(184, 134, 11, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Cozy Hufflepuff Frame Styling */
+        .hufflepuff-border {
+            border: 2px solid #9A7B38;
+            box-shadow: 0 0 15px rgba(236, 185, 57, 0.2), inset 0 0 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .hufflepuff-border::before {
+            content: '';
+            position: absolute;
+            top: -5px; left: -5px; right: -5px; bottom: -5px;
+            border: 1px solid rgba(240, 199, 94, 0.4);
+            pointer-events: none;
+            border-radius: inherit;
+        }
+
+        /* Glassmorphism card effect */
+        .hufflepuff-card {
+            background: rgba(42, 37, 30, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(154, 123, 56, 0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .hufflepuff-card:hover:not(.locked) {
+            transform: translateY(-8px) scale(1.02);
+            border-color: #ECB939;
+            box-shadow: 0 12px 30px rgba(236, 185, 57, 0.3), 0 0 15px rgba(240, 199, 94, 0.2);
+        }
+
+        /* Locked Card Styling */
+        .hufflepuff-card.locked {
+            background: rgba(26, 24, 21, 0.6);
+            border-color: rgba(92, 64, 51, 0.3);
+            filter: grayscale(0.5);
+            cursor: not-allowed;
+        }
+
+        .hufflepuff-card.locked:hover {
+            border-color: rgba(184, 134, 11, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Shimmer Animation */
+        @keyframes magicGlow {
+            0%, 100% { opacity: 0.4; filter: drop-shadow(0 0 5px #ECB939); }
+            50% { opacity: 0.9; filter: drop-shadow(0 0 18px #F0C75E); }
+        }
+
+        .magic-glow {
+            animation: magicGlow 3.5s infinite ease-in-out;
+        }
+
+        /* Shake animation for spell failure */
+        @keyframes spellShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px) rotate(-1deg); }
+            40% { transform: translateX(8px) rotate(1deg); }
+            60% { transform: translateX(-6px); }
+            80% { transform: translateX(6px); }
+        }
+
+        .shake-animation {
+            animation: spellShake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            border-color: #D32F2F !important;
+            box-shadow: 0 0 20px rgba(211, 47, 47, 0.5) !important;
+        }
+
+        /* Floating particles overlay */
+        .herbology-bg {
+            background-image: radial-gradient(rgba(236, 185, 57, 0.12) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #12100E;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3D3021;
+            border-radius: 4px;
+            border: 1px solid #9A7B38;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ECB939;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between herbology-bg relative">
+
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden" id="particles-container">
+        <!-- Floating Ambient Magic Dust elements via JS -->
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 flex-grow flex flex-col items-center">
+
+        <header class="text-center mb-10 w-full max-w-3xl">
+            <!-- Crest Badge -->
+            <div class="inline-flex items-center justify-center space-x-2 bg-hufflepuff-darkSoil px-4 py-1.5 rounded-full border border-hufflepuff-borderGold/60 shadow-lg mb-4">
+                <i class="fa-solid font-bold fa-badger-badger text-hufflepuff-yellow text-sm"></i>
+                <span class="font-cinzel tracking-widest text-xs sm:text-sm text-hufflepuff-gold font-bold uppercase">
+                    🦡 Hufflepuff House • 赫奇帕奇學院
+                </span>
+                <i class="fa-solid fa-leaf text-hufflepuff-softGreen text-xs"></i>
+            </div>
+            
+            <h1 class="text-3xl sm:text-5xl font-extrabold font-cinzel text-transparent bg-clip-text bg-gradient-to-r from-hufflepuff-lightGold via-hufflepuff-yellow to-hufflepuff-darkGold tracking-wider mb-2 drop-shadow-md">
+                HUFFLEPUFF HERBOLOGY HUB
+            </h1>
+            <p class="font-serifTC text-hufflepuff-gold/80 text-sm sm:text-base italic">
+                「忠誠、誠實、不畏艱辛」— 魔法課程修練歷程檔案
+            </p>
+        </header>
+
+        <section class="w-full max-w-2xl bg-hufflepuff-parchment/80 rounded-2xl p-6 sm:p-8 hufflepuff-border mb-12 relative overflow-hidden backdrop-blur-md">
+            <!-- Decorative Corner Leaves -->
+            <div class="absolute top-2 left-2 text-hufflepuff-borderGold/40 text-xl"><i class="fa-solid fa-seedling"></i></div>
+            <div class="absolute top-2 right-2 text-hufflepuff-borderGold/40 text-xl"><i class="fa-solid fa-seedling"></i></div>
+            <div class="absolute bottom-2 left-2 text-hufflepuff-borderGold/40 text-xl"><i class="fa-solid fa-leaf"></i></div>
+            <div class="absolute bottom-2 right-2 text-hufflepuff-borderGold/40 text-xl"><i class="fa-solid fa-leaf"></i></div>
+
+            <div class="flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-8">
+                <!-- Avatar with Glowing Gold Frame -->
+                <div class="relative group">
+                    <div class="absolute -inset-1.5 bg-gradient-to-r from-hufflepuff-yellow to-hufflepuff-darkGold rounded-full blur magic-glow opacity-80"></div>
+                    <div class="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1.5 bg-hufflepuff-darkSoil border-2 border-hufflepuff-gold overflow-hidden shadow-2xl flex items-center justify-center">
+                        <!-- Placeholder Profile Image -->
+                        <img id="avatar-img" src="https://placehold.co/300x300/2A251E/F0C75E?text=Wizard+Hufflepuff" 
+                             alt="Student Avatar" 
+                             class="w-full h-full object-cover rounded-full transition-transform duration-500 group-hover:scale-110"
+                             onerror="this.src='https://placehold.co/300x300/383228/ECB939?text=%F0%9F%A6%A1+Wizard'">
+                    </div>
+                    <!-- Badge Icon -->
+                    <div class="absolute bottom-0 right-0 bg-hufflepuff-yellow text-hufflepuff-black w-8 h-8 rounded-full border-2 border-hufflepuff-black flex items-center justify-center text-xs font-bold shadow-lg" title="赫奇帕奇成員">
+                        🦡
+                    </div>
+                </div>
+
+                <!-- Profile Info & Progress -->
+                <div class="flex-1 text-center sm:text-left space-y-3">
+                    <div>
+                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+                            <h2 class="text-2xl font-bold font-serifTC text-hufflepuff-lightGold tracking-wide">
+                                赫奇帕奇學徒巫師
+                            </h2>
+                            <span class="text-xs bg-hufflepuff-leafGreen/60 text-hufflepuff-lightGold px-2.5 py-0.5 rounded-full border border-hufflepuff-softGreen">
+                                草藥學大師
+                            </span>
+                        </div>
+                        <p class="text-xs sm:text-sm font-cinzel text-hufflepuff-gold/90">
+                            Hogwarts Web Wizardry Course • 2026 Term
+                        </p>
+                    </div>
+
+                    <!-- Motto -->
+                    <p class="text-xs text-hufflepuff-gold/70 italic border-l-2 border-hufflepuff-yellow/50 pl-2 py-0.5 my-2">
+                        "Those patient Hufflepuffs are true and unafraid of toil."
+                    </p>
+
+                    <!-- Level Progress Bar -->
+                    <div class="space-y-1.5 pt-1">
+                        <div class="flex justify-between text-xs font-bold font-cinzel text-hufflepuff-lightGold">
+                            <span><i class="fa-solid fa-wand-magic-sparkles text-hufflepuff-yellow mr-1"></i>魔法關卡解鎖進度</span>
+                            <span class="text-hufflepuff-yellow font-extrabold">2 / 16 (12.5%)</span>
+                        </div>
+                        <div class="w-full h-3 bg-hufflepuff-darkSoil/90 rounded-full border border-hufflepuff-borderGold/60 p-0.5 relative overflow-hidden shadow-inner">
+                            <div class="h-full bg-gradient-to-r from-hufflepuff-darkGold via-hufflepuff-yellow to-hufflepuff-lightGold rounded-full transition-all duration-1000 shadow-lg relative" style="width: 12.5%;">
+                                <div class="absolute inset-0 bg-white/30 animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="w-full">
+            <div class="flex items-center justify-between mb-6 border-b border-hufflepuff-borderGold/30 pb-3">
+                <h3 class="text-xl sm:text-2xl font-bold font-cinzel text-hufflepuff-lightGold flex items-center gap-2">
+                    <i class="fa-solid fa-book-bookmark text-hufflepuff-yellow"></i> 
+                    魔法課堂 Task Missions
+                </h3>
+                <span class="text-xs sm:text-sm font-serifTC text-hufflepuff-gold/70">
+                    點擊探索已獲得草藥能量之任務
+                </span>
+            </div>
+
+            <!-- 16 Grid Items -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6" id="cards-container">
+                <!-- Cards Javascript Injected or Rendered Here -->
+            </div>
+        </section>
+    </main>
+
+    <div id="magic-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-hufflepuff-parchment border-2 border-hufflepuff-gold max-w-md w-full rounded-2xl p-6 shadow-2xl relative transform scale-90 transition-all duration-300 hufflepuff-border text-center">
+            <!-- Top Plant Decoration -->
+            <div class="w-12 h-12 bg-hufflepuff-darkSoil border border-hufflepuff-yellow text-hufflepuff-yellow rounded-full mx-auto -mt-12 flex items-center justify-center text-xl shadow-lg">
+                <i class="fa-solid fa-lock text-hufflepuff-yellow"></i>
+            </div>
+
+            <h4 class="text-xl font-bold font-serifTC text-hufflepuff-lightGold mt-4 mb-2">
+                【阿拉霍洞開 Alohomora 失敗】
+            </h4>
+            <div class="h-0.5 w-16 bg-hufflepuff-yellow/60 mx-auto mb-4"></div>
+            
+            <p id="modal-message" class="text-sm font-serifTC text-hufflepuff-gold/90 leading-relaxed mb-6">
+                此草藥魔法課程尚未解鎖！需要提升學院積分或達成前置任務！
+            </p>
+
+            <button onclick="closeModal()" class="w-full py-2.5 px-4 bg-gradient-to-r from-hufflepuff-darkGold via-hufflepuff-yellow to-hufflepuff-darkGold text-hufflepuff-black font-bold font-serifTC rounded-xl shadow-md hover:brightness-110 active:scale-95 transition-all">
+                遵命，繼續修練 ✨
+            </button>
+        </div>
+    </div>
+
+    <footer class="relative z-10 border-t border-hufflepuff-borderGold/30 py-6 text-center text-xs text-hufflepuff-gold/60 font-serifTC mt-12 bg-hufflepuff-black/80">
+        <p>Hogwarts School of Witchcraft and Wizardry • Hufflepuff Common Room</p>
+        <p class="mt-1">© 2026 Web Wizardry Class. Crafted with loyalty and dedication.</p>
+    </footer>
+
+    <script>
+        // 16 Mission Tasks Data
+        const missions = [
+            { week: 1, title: 'Week 1 - 數位名片', link: 'w1/index.html', unlocked: true, tag: '已完成・五星', icon: 'fa-address-card' },
+            { week: 2, title: 'Week 2 - 今天吃甚麼?', link: 'w2/index.html', unlocked: true, tag: '已完成・五星', icon: 'fa-utensils' },
+            { week: 3, title: 'Week 3 - 溫室魔草圖鑑', link: '#', unlocked: false, tag: '未解鎖', icon: 'fa-seedling' },
+            { week: 4, title: 'Week 4 - 魔法藥水調製', link: '#', unlocked: false, tag: '未解鎖', icon: 'fa-flask' },
+            { week: 5, title: 'Week 5 - 魁地奇比分板', link: '#', unlocked: false, tag: '未解鎖', icon: 'fa-trophy' },
+            { week: 6, title: 'Week 6 - 奇獸飼育學日記', link: '#', unlocked: false, tag: '未解鎖', icon: 'fa-paw' },
+            { week: 7, title: 'Week 7 - 羊皮紙卷軸表單', link: '#', unlocked: false, tag: '未解鎖', icon: 'fa-scroll' },
+            { week: 8, title: 'Week 8 - 期中魔法考核', link: '#', unlocked: false, tag: '未解鎖', icon: 'fa-hat-wizard' },
+            { week: 9, title: 'Week 9 - 預言家日報版面', link: '#', unlocked: false, tag: '未解鎖', icon: 'fa-newspaper' },
+            { week: 10, title: 'Week 10 - 萬應室時鐘APP', link: '#', unlocked: false, tag: '未解鎖', icon: 'fa-clock' },
+            { week: 11, title: 'Week 11 - 活點地圖 API', link: '#', unlocked: false, tag: '未解鎖', icon: 'fa-map-location-dot' },
+            { week: 12, title: 'Week 12 - 護法召喚動畫', link: '#', unlocked: false, tag: '未解鎖', icon: 'fa-wand-magic-sparkles' },
+            { week: 13, title: 'Week 13 - 古靈閣金庫試算', link: '#', unlocked: false, tag: '未解鎖', icon: 'fa-coins' },
+            { week: 14, title: 'Week 14 - 三巫鬥法大賽', link: '#', unlocked: false, tag: '未解鎖', icon: 'fa-fire' },
+            { week: 15, title: 'Week 15 - 咆哮信發送系統', link: '#', unlocked: false, tag: '未解鎖', icon: 'fa-envelope-open-text' },
+            { week: 16, title: 'Week 16 - 畢業終極大決戰', link: '#', unlocked: false, tag: '未解鎖', icon: 'fa-graduation-cap' }
+        ];
+
+        // Render Cards dynamically
+        const cardsContainer = document.getElementById('cards-container');
+
+        missions.forEach(mission => {
+            const card = document.createElement('div');
+            
+            if (mission.unlocked) {
+                // UNLOCKED CARD
+                card.className = "hufflepuff-card rounded-xl p-5 flex flex-col justify-between relative overflow-hidden group cursor-pointer";
+                card.innerHTML = `
+                    <a href="${mission.link}" class="absolute inset-0 z-20"></a>
+                    <!-- Golden Accent Ribbon -->
+                    <div class="absolute top-0 right-0 w-24 h-24 pointer-events-none">
+                        <div class="bg-gradient-to-l from-hufflepuff-yellow to-hufflepuff-darkGold text-hufflepuff-black text-[10px] font-bold py-1 text-center font-cinzel rotate-45 translate-x-7 translate-y-3 shadow-md">
+                            ${mission.tag}
+                        </div>
+                    </div>
+
+                    <div>
+                        <!-- Header Icon -->
+                        <div class="w-10 h-10 rounded-lg bg-hufflepuff-yellow/20 border border-hufflepuff-yellow flex items-center justify-center text-hufflepuff-yellow mb-3 group-hover:bg-hufflepuff-yellow group-hover:text-hufflepuff-black transition-colors duration-300">
+                            <i class="fa-solid ${mission.icon} text-lg"></i>
+                        </div>
+                        <h4 class="text-lg font-bold font-serifTC text-hufflepuff-lightGold mb-1 group-hover:text-hufflepuff-yellow transition-colors">
+                            ${mission.title}
+                        </h4>
+                        <p class="text-xs text-hufflepuff-gold/70 font-cinzel">
+                            Status: Unlocked • ✨ 5 Stars
+                        </p>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-hufflepuff-borderGold/30 flex items-center justify-between text-xs font-bold text-hufflepuff-yellow">
+                        <span>開啟任務檔案</span>
+                        <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                `;
+            } else {
+                // LOCKED CARD
+                card.className = "hufflepuff-card locked rounded-xl p-5 flex flex-col justify-between relative overflow-hidden";
+                card.setAttribute('onclick', `triggerLockedEffect(this, ${mission.week})`);
+                card.innerHTML = `
+                    <!-- Lock Emblem -->
+                    <div class="absolute top-3 right-3 text-hufflepuff-gold/40">
+                        <i class="fa-solid fa-lock text-sm"></i>
+                    </div>
+
+                    <div>
+                        <!-- Header Icon -->
+                        <div class="w-10 h-10 rounded-lg bg-hufflepuff-darkSoil border border-hufflepuff-warmBrown flex items-center justify-center text-hufflepuff-gold/40 mb-3">
+                            <i class="fa-solid ${mission.icon} text-lg"></i>
+                        </div>
+                        <h4 class="text-lg font-bold font-serifTC text-hufflepuff-gold/50 mb-1">
+                            ${mission.title}
+                        </h4>
+                        <p class="text-xs text-hufflepuff-gold/40 font-cinzel">
+                            🔒 尚未解鎖 (Requires Progression)
+                        </p>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-hufflepuff-warmBrown/40 flex items-center justify-between text-xs font-bold text-hufflepuff-gold/40">
+                        <span>麻瓜印記封印中</span>
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                `;
+            }
+
+            cardsContainer.appendChild(card);
+        });
+
+        // Trigger shake & spell modal on locked card click
+        function triggerLockedEffect(element, weekNum) {
+            element.classList.add('shake-animation');
+            setTimeout(() => {
+                element.classList.remove('shake-animation');
+            }, 500);
+
+            // Open Modal
+            const modal = document.getElementById('magic-modal');
+            const message = document.getElementById('modal-message');
+            message.innerHTML = `【Week ${weekNum} 草藥與防禦魔法研習】尚處於麻瓜封印狀態！<br><span class="text-hufflepuff-yellow text-xs mt-2 block">請先完成前面的課程與累積學院積分以獲得《解鎖咒語》。</span>`;
+            
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.children[0].classList.remove('scale-90');
+            modal.children[0].classList.add('scale-100');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('magic-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.children[0].classList.remove('scale-100');
+            modal.children[0].classList.add('scale-90');
+        }
+
+        // Generate Ambient Floating Gold Particles
+        const particlesContainer = document.getElementById('particles-container');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            const size = Math.random() * 4 + 2;
+            particle.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                background: rgba(240, 199, 94, ${Math.random() * 0.5 + 0.2});
+                border-radius: 50%;
+                top: ${Math.random() * 100}%;
+                left: ${Math.random() * 100}%;
+                box-shadow: 0 0 ${size * 2}px #ECB939;
+                animation: floatParticle ${Math.random() * 10 + 10}s infinite ease-in-out;
+            `;
+            particlesContainer.appendChild(particle);
+        }
+
+        // Add keyframes dynamically for floating particles
+        const styleSheet = document.createElement('style');
+        styleSheet.innerText = `
+            @keyframes floatParticle {
+                0%, 100% { transform: translateY(0) translateX(0); opacity: 0.2; }
+                50% { transform: translateY(-40px) translateX(20px); opacity: 0.8; }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+    </script>
+</body>
+</html>
