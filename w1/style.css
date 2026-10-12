@@ -1,0 +1,105 @@
+/* --- 基礎設定 --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+/* 讓整個網頁背景呈淡灰藍色，並將內容水平垂直居中 */
+body {
+    background-color: #E6ECF0; /* 莫蘭迪極淺灰藍背景 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* --- 名片主體 --- */
+.profile-card {
+    background-color: #FFFFFF; /* 卡片主體白色 */
+    width: 320px;
+    padding: 40px 30px;
+    border-radius: 20px; /* 圓角設計 */
+    text-align: center; /* 文字至中 */
+    
+    /* 現代感柔和雙層陰影 */
+    box-shadow: 0 10px 25px rgba(69, 90, 100, 0.12),
+                0 4px 10px rgba(69, 90, 100, 0.06);
+    
+    /* 移入時的平滑過渡效果 */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 滑鼠hover在卡片上時輕微浮起 */
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(69, 90, 100, 0.18);
+}
+
+/* --- 1. 大頭照樣式 --- */
+.avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%; /* 裁切成正圓形 */
+    object-fit: cover; /* 防止圖片變形 */
+    margin-bottom: 20px;
+    border: 3px solid #D0DBE5; /* 莫蘭迪淺灰藍邊框 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* --- 2. 名字與簡介樣式 --- */
+.name {
+    font-size: 1.5rem;
+    color: #37474F; /* 深莫蘭迪藍灰，比純黑更有質感 */
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.bio {
+    font-size: 0.9rem;
+    color: #78909C; /* 中等莫蘭迪灰藍 */
+    line-height: 1.5;
+    margin-bottom: 28px;
+}
+
+/* --- 3. 按鈕區塊與樣式 --- */
+.button-group {
+    display: flex;
+    flex-direction: column; /* 按鈕上下排列 */
+    gap: 12px; /* 按鈕間距 */
+}
+
+.btn {
+    display: block;
+    padding: 12px 0;
+    border-radius: 12px;
+    text-decoration: none; /* 移除超連結底線 */
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.25s ease;
+}
+
+/* Instagram 按鈕：莫蘭迪主色（經典灰藍） */
+.instagram-btn {
+    background-color: #62adbf;
+    color: #FFFFFF;
+    box-shadow: 0 4px 10px rgba(96, 125, 139, 0.3);
+}
+
+.instagram-btn:hover {
+    background-color: #546E7A;
+    box-shadow: 0 6px 14px rgba(96, 125, 139, 0.4);
+}
+
+/* Email 按鈕：莫蘭迪次色（軟綿次灰藍） */
+.email-btn {
+    background-color: #ECEFF1;
+    color: #455A64;
+    border: 1px solid #CFD8DC;
+}
+
+.email-btn:hover {
+    background-color: #CFD8DC;
+    color: #37474F;
+}
