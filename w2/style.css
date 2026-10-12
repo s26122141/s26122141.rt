@@ -1,0 +1,106 @@
+/* 引入 Google 字體，讓排版更可愛 */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600&family=Noto+Sans+TC:wght@500;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Noto Sans TC', 'Fredoka', sans-serif;
+    /* 活潑可愛的黃橘色系漸層背景 */
+    background: linear-gradient(135deg, #FFD166, #FF9F1C);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background-color: #ffffff;
+    padding: 40px 30px;
+    border-radius: 24px;
+    box-shadow: 0 12px 30px rgba(255, 111, 0, 0.2);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+/* 大標題樣式 */
+h1 {
+    font-size: 2rem;
+    color: #333333;
+    margin-bottom: 25px;
+    word-break: break-all;
+}
+
+/* 抽籤大按鈕樣式 */
+#draw-btn {
+    background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+    color: white;
+    border: none;
+    padding: 15px 35px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    transition: all 0.2s ease;
+}
+
+#draw-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+}
+
+#draw-btn:active {
+    transform: translateY(1px);
+}
+
+/* 食物卡片與圖片區 */
+.food-card {
+    margin-bottom: 25px;
+}
+
+.food-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 16px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+/* 馬上出發按鈕樣式 */
+.map-btn {
+    display: inline-block;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 30px;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    transition: background-color 0.2s;
+}
+
+.map-btn:hover {
+    background-color: #43A047;
+}
+
+/* 隱藏輔助類別 */
+.hidden {
+    display: none;
+}
+
+/* 生動的彈跳動畫 */
+@keyframes bounce {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.bounce-animation {
+    animation: bounce 0.4s ease;
+}
