@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>赫夫帕夫魔法留言板 - Hufflepuff Common Room</title>
+  
+  <!-- 引入 Google Fonts 魔法風格字體 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       【CSS 變數設定 - 方便修改主題顏色與樣式】
+       ========================================================================== */
+    :root {
+      /* 赫夫帕夫代表色 */
+      --hufflepuff-gold: #ecb939;       /* 鮮明金黃色 */
+      --hufflepuff-yellow: #f0c75e;     /* 溫暖亮黃色 */
+      --hufflepuff-dark: #1f1b18;       /* 沉穩黑褐色 */
+      --hufflepuff-accent: #372e29;     /* 深木色 */
+      --bg-color: #12100e;              /* 網頁整體暗色背景 */
+
+      /* 輪播特效變數 */
+      --highlight-glow: 0 0 25px rgba(236, 185, 57, 0.85); /* 聚焦卡片的發光效果 */
+      --card-bg: rgba(31, 27, 24, 0.85);                     /* 卡片半透明背景 */
+    }
+
+    /* 全局樣式設定 */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: #e2d7c5;
+      font-family: 'Noto Serif TC', serif;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      /* 背景加上微弱的大地溫暖漸層 */
+      background-image: 
+        radial-gradient(circle at 50% 20%, rgba(236, 185, 57, 0.15), transparent 70%),
+        radial-gradient(circle at 80% 80%, rgba(55, 46, 41, 0.3), transparent 50%);
+      background-attachment: fixed;
+    }
+
+    /* 頁頭標題區塊 */
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    h1 {
+      font-family: 'Cinzel', 'Noto Serif TC', serif;
+      font-size: 2.5rem;
+      color: var(--hufflepuff-gold);
+      text-shadow: 0 0 10px rgba(236, 185, 57, 0.4);
+      margin-bottom: 0.5rem;
+      letter-spacing: 2px;
+    }
+
+    p.subtitle {
+      font-size: 1.1rem;
+      color: #a89f91;
+      font-style: italic;
+    }
+
+    /* ==========================================================================
+       【載入中動畫樣式】
+       ========================================================================== */
+    #loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 0;
+    }
+
+    /* 酷炫魔法光環旋轉動畫 */
+    .magic-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(236, 185, 57, 0.2);
+      border-top: 4px solid var(--hufflepuff-gold);
+      border-bottom: 4px solid var(--hufflepuff-gold);
+      border-radius: 50%;
+      animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+      box-shadow: var(--highlight-glow);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.15); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    .loader-text {
+      margin-top: 1.5rem;
+      font-size: 1.2rem;
+      color: var(--hufflepuff-yellow);
+      letter-spacing: 2px;
+      animation: pulse 1.5s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.5; }
+      to { opacity: 1; }
+    }
+
+    /* ==========================================================================
+       【瀑布流 Layout & 卡片樣式】
+       ========================================================================== */
+    /* 容器設定 */
+    #board-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* CSS Columns 實作瀑布流 (Masonry) */
+    .masonry-grid {
+      column-count: 3; /* 預設 3 欄 */
+      column-gap: 1.5rem;
+    }
+
+    /* 響應式調整欄數 */
+    @media (max-width: 900px) {
+      .masonry-grid { column-count: 2; }
+    }
+    @media (max-width: 600px) {
+      .masonry-grid { column-count: 1; }
+    }
+
+    /* 卡片基本樣式 */
+    .message-card {
+      break-inside: avoid; /* 避免卡片跨欄斷裂 */
+      margin-bottom: 1.5rem;
+      background: var(--card-bg);
+      border: 2px solid #4a3e35;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+      /* 滑順的動畫過渡效果 */
+      transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      backdrop-filter: blur(5px);
+    }
+
+    /* 卡片頂部裝飾條 (赫夫帕夫黃色標記) */
+    .message-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, var(--hufflepuff-gold), transparent);
+      opacity: 0.5;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      border-bottom: 1px solid rgba(236, 185, 57, 0.2);
+      padding-bottom: 0.5rem;
+    }
+
+    .author-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--hufflepuff-gold);
+    }
+
+    .timestamp {
+      font-size: 0.75rem;
+      color: #8c8275;
+    }
+
+    .card-body {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #ded7cd;
+      white-space: pre-wrap; /* 保留留言換行 */
+      word-break: break-word;
+    }
+
+    /* ==========================================================================
+       【輪播聚焦 (Highlight) 特效樣式】
+       ========================================================================== */
+    
+    /* 當 activeHighlight class 被加到網頁容器上時，非焦點卡片的樣式 */
+    .masonry-grid.has-active .message-card {
+      opacity: 0.35;                   /* 降低透明度 */
+      filter: blur(1.5px) grayscale(40%); /* 增加模糊度與淡化顏色 */
+      transform: scale(0.96);          /* 稍微微縮小 */
+    }
+
+    /* 被選中的高亮卡片樣式 */
+    .masonry-grid.has-active .message-card.highlight {
+      opacity: 1 !important;
+      filter: blur(0) grayscale(0%) !important;
+      transform: scale(1.06) translateY(-5px) !important; /* 放大並微微浮起 */
+      border-color: var(--hufflepuff-yellow);
+      box-shadow: var(--highlight-glow), 0 10px 25px rgba(0, 0, 0, 0.8);
+      z-index: 10;                     /* 確保浮在最上層 */
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>赫夫帕夫交誼廳留言板</h1>
+    <p class="subtitle">「忠誠、誠實與勤勞」— 魔法紀錄牆</p>
+  </header>
+
+  <main id="board-container">
+    <!-- 讀取中酷炫動畫 -->
+    <div id="loader">
+      <div class="magic-spinner"></div>
+      <div class="loader-text">✨ 讀取留言中...</div>
+    </div>
+
+    <!-- 瀑布流卡片容器 -->
+    <div id="cards-wall" class="masonry-grid"></div>
+  </main>
+
+  <script>
+    /* ==========================================================================
+       【參數控制區 - 可在此自由修改時間與設定】
+       ========================================================================== */
+    // Google 試算表發佈的 CSV 網址
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS456k07NmQaFc3mf1G6ZMVpM1QWQUtpbE4OOiS8msXgoD9-KrBqVs39p_jdNr6eexBNDT_YtwKJ6T0/pub?output=csv';
+    
+    // 【輪播秒數控制】單位為毫秒 (ms)。3000ms = 3 秒
+    const ROTATION_INTERVAL = 3000; 
+
+    // 全局變數紀錄當前輪播的索引
+    let currentIndex = 0;
+    let rotationTimer = null;
+
+    /* ==========================================================================
+       【健全的 CSV 解析邏輯】
+       處理留言內容中可能含有「逗號」、「換行」或「雙引號」的問題
+       ========================================================================== */
+    function parseCSV(text) {
+      const lines = [];
+      let row = [];
+      let currentEntry = '';
+      let insideQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        if (char === '"') {
+          if (insideQuotes && nextChar === '"') {
+            // 處理雙引號轉義 ("")
+            currentEntry += '"';
+            i++; 
+          } else {
+            // 切換引號狀態
+            insideQuotes = !insideQuotes;
+          }
+        } else if (char === ',' && !insideQuotes) {
+          // 在雙引號外的逗號視為欄位分隔
+          row.push(currentEntry.trim());
+          currentEntry = '';
+        } else if ((char === '\r' || char === '\n') && !insideQuotes) {
+          // 在雙引號外的換行視為列分隔
+          if (char === '\r' && nextChar === '\n') {
+            i++; // 忽略 \r\n 中的 \n
+          }
+          row.push(currentEntry.trim());
+          if (row.length > 0 && row.some(field => field !== '')) {
+            lines.push(row);
+          }
+          row = [];
+          currentEntry = '';
+        } else {
+          currentEntry += char;
+        }
+      }
+      
+      // 處理最後一行
+      if (currentEntry || row.length > 0) {
+        row.push(currentEntry.trim());
+        lines.push(row);
+      }
+
+      return lines;
+    }
+
+    /* ==========================================================================
+       【主程式：抓取資料與建立畫面】
+       ========================================================================== */
+    async function fetchMessages() {
+      const loader = document.getElementById('loader');
+      const wall = document.getElementById('cards-wall');
+
+      try {
+        const response = await fetch(CSV_URL);
+        if (!response.ok) throw new Error('無法讀取 CSV 資料');
+
+        const csvText = await response.text();
+        const parsedData = parseCSV(csvText);
+
+        // 隱藏讀取動畫
+        loader.style.display = 'none';
+
+        // 假設第 0 行是表頭 (時間戳記, 名字, 悄悄話)，從第 1 行開始提取資料
+        const rows = parsedData.slice(1);
+
+        if (rows.length === 0) {
+          wall.innerHTML = '<p style="text-align:center; grid-column:1/-1;">目前還沒有任何留言喔！</p>';
+          return;
+        }
+
+        // 動態生成 HTML 卡片
+        rows.forEach((cols) => {
+          // 欄位對應：[0]時間戳記, [1]名字, [2]悄悄話
+          const time = cols[0] || '未知時間';
+          const name = cols[1] || '匿名霍格華茲學生';
+          const message = cols[2] || '(無留言內容)';
+
+          const card = document.createElement('div');
+          card.className = 'message-card';
+          card.innerHTML = `
+            <div class="card-header">
+              <span class="author-name">${escapeHTML(name)}</span>
+              <span class="timestamp">${escapeHTML(time)}</span>
+            </div>
+            <div class="card-body">${escapeHTML(message)}</div>
+          `;
+          wall.appendChild(card);
+        });
+
+        // 資料卡片渲染完成後，啟動輪播效果
+        startCarousel();
+
+      } catch (error) {
+        console.error('Fetch error:', error);
+        loader.innerHTML = `<div style="color: #ff6b6b; text-align: center;">魔法連線失敗：${error.message}</div>`;
+      }
+    }
+
+    /* XSS 防護安全轉換 */
+    function escapeHTML(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    /* ==========================================================================
+       【輪播高亮特效控制 (setInterval)】
+       ========================================================================== */
+    function startCarousel() {
+      const cards = document.querySelectorAll('.message-card');
+      const wall = document.getElementById('cards-wall');
+
+      if (cards.length === 0) return;
+
+      // 啟動牆面的 active 狀態 (讓非焦點卡片開始套用模糊/變暗樣式)
+      wall.classList.add('has-active');
+
+      // 執行高亮切換的函式
+      function highlightNextCard() {
+        // 先移除所有卡片的高亮類別
+        cards.forEach(card => card.classList.remove('highlight'));
+
+        // 替當前索引的卡片加上高亮
+        cards[currentIndex].classList.add('highlight');
+
+        // 計算下一張卡片索引 (循環播放)
+        currentIndex = (currentIndex + 1) % cards.length;
+      }
+
+      // 預設立刻執行一次
+      highlightNextCard();
+
+      // 設定每隔指定時間 (預設 3 秒) 自動切換下一張
+      rotationTimer = setInterval(highlightNextCard, ROTATION_INTERVAL);
+    }
+
+    // 網頁載入完成後執行
+    document.addEventListener('DOMContentLoaded', fetchMessages);
+  </script>
+</body>
+</html>
