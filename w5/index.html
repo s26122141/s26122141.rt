@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>雲端心電感應 | Subtle Hufflepuff Edition</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            hpYellow: '#EAB308',       // 赫夫帕夫經典金黃
+            hpYellowHover: '#CA8A04',
+            hpDark: '#141210',         // 暖調微黑底色
+            hpCard: '#1C1917',         // 深炭灰卡片
+            hpBorder: '#292524',       // 低調細緻邊框
+            hpGoldAccent: '#D97706',   // 輔助暗金色
+          }
+        }
+      }
+    }
+  </script>
+  <!-- FontAwesome 圖示 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #141210;
+      color: #E7E5E4;
+      background-image: radial-gradient(#292524 0.75px, transparent 0.75px);
+      background-size: 20px 20px;
+    }
+
+    .font-subtle-serif {
+      font-family: 'Cinzel', 'Noto Serif TC', serif;
+    }
+
+    /* 3D 卡片翻轉 CSS */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .transform-style-3d {
+      transform-style: preserve-3d;
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-hpYellow selection:text-stone-950">
+
+  <!-- 頂部導覽列 -->
+  <header class="border-b border-hpBorder bg-hpDark/95 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3.5 flex justify-between items-center">
+      <!-- 左上角 Logo 標籤 (已替換為閃電圖示，連續點擊 3 次開啟控制台) -->
+      <div class="flex items-center gap-3 cursor-pointer select-none group" id="logoBadge" title="連續點擊 3 次開啟控制台">
+        <div class="w-8 h-8 rounded-lg bg-hpYellow/10 border border-hpYellow/30 text-hpYellow flex items-center justify-center font-bold text-base group-hover:border-hpYellow transition-colors">
+          <i class="fa-solid fa-bolt text-sm"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] text-stone-500 font-mono uppercase tracking-widest">Tacit Telepathy</span>
+          </div>
+          <h1 class="font-subtle-serif font-semibold text-sm text-stone-200 tracking-wide">雲端心電感應</h1>
+        </div>
+      </div>
+
+      <!-- 右側房間資訊與控制台按鈕 -->
+      <div class="flex items-center gap-2.5">
+        <div id="roomTag" class="hidden px-3 py-1 bg-hpCard border border-hpBorder rounded-md text-xs font-mono text-stone-300">
+          📍 房號: <span id="currentRoomDisplay" class="font-bold text-hpYellow">---</span>
+        </div>
+        <button id="hostToggleBtn" onclick="toggleHostPanel()" class="px-3 py-1 bg-stone-900 hover:bg-stone-800 border border-stone-700/60 rounded-md text-xs font-medium text-stone-300 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-sliders text-hpYellow/80"></i>
+          <span>控制台</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主內容容器 -->
+  <main class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full">
+
+    <!-- 步驟 1: 登入卡片 -->
+    <section id="loginSection" class="max-w-md mx-auto my-10 bg-hpCard border border-hpBorder rounded-xl p-6 shadow-2xl relative overflow-hidden">
+      <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-hpYellow/5 rounded-full pointer-events-none blur-xl"></div>
+      
+      <div class="flex items-center gap-2.5 mb-2 pb-3 border-b border-hpBorder">
+        <span class="text-hpYellow text-sm"><i class="fa-solid fa-bolt"></i></span>
+        <h2 class="text-base font-bold text-stone-100 font-subtle-serif">進入遊戲房間</h2>
+      </div>
+      <p class="text-xs text-stone-400 mb-6 leading-relaxed">請輸入房間代碼與您的暱稱，即可連線同步進行默契心電感應考驗。</p>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-stone-300 mb-1.5">房間代碼 (Room Code)</label>
+          <input type="text" id="inputRoom" placeholder="例如: 101 或 Team-A" class="w-full bg-stone-950 border border-hpBorder rounded-lg px-3.5 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-hpYellow/70 transition font-mono">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-stone-300 mb-1.5">玩家名稱 (Name)</label>
+          <input type="text" id="inputPlayer" placeholder="例如: Alex" class="w-full bg-stone-950 border border-hpBorder rounded-lg px-3.5 py-2.5 text-sm text-stone-100 focus:outline-none focus:border-hpYellow/70 transition">
+        </div>
+        <button onclick="joinRoom()" class="w-full py-2.5 bg-hpYellow hover:bg-hpYellowHover text-stone-950 font-bold rounded-lg shadow-md transition text-sm flex items-center justify-center gap-2 mt-2">
+          <span>進入房間</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- 步驟 2: 遊戲主畫面 -->
+    <section id="gameSection" class="hidden space-y-6">
+
+      <!-- 隱藏房主控制台 -->
+      <div id="hostPanel" class="hidden bg-hpCard border border-hpYellow/40 rounded-xl p-4 shadow-xl transition-all">
+        <div class="flex items-center justify-between mb-3 border-b border-hpBorder pb-2">
+          <span class="text-xs font-bold text-hpYellow flex items-center gap-1.5 uppercase tracking-wider font-mono">
+            <i class="fa-solid fa-crown text-hpYellow"></i> Host Control Panel
+          </span>
+          <span class="text-[11px] text-stone-500 font-mono">房主控制區</span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+          <div class="md:col-span-2 flex gap-2">
+            <input type="text" id="hostQuestionInput" placeholder="輸入題目 (例如：出國最想去哪裡？)" class="flex-grow bg-stone-950 border border-hpBorder rounded-lg px-3 py-1.5 text-xs text-stone-100 focus:outline-none focus:border-hpYellow/60">
+            <button onclick="setQuestion()" class="px-3.5 py-1.5 bg-hpYellow hover:bg-hpYellowHover text-stone-950 font-bold rounded-lg text-xs shrink-0 transition">
+              發布題目
+            </button>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="revealAnswers()" class="flex-1 py-1.5 bg-stone-900 hover:bg-stone-800 text-hpYellow font-bold rounded-lg text-xs border border-hpYellow/30 shadow flex items-center justify-center gap-1 transition">
+              <i class="fa-solid fa-eye text-hpYellow"></i> 開牌揭曉
+            </button>
+            <button onclick="resetGame()" class="px-3 py-1.5 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-900/60 text-rose-300 font-medium rounded-lg text-xs shrink-0 transition">
+              重設
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 題目區塊 -->
+      <div class="bg-hpCard border border-hpBorder rounded-xl p-6 shadow-md relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-hpYellow/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold text-hpYellow bg-hpYellow/10 border border-hpYellow/20 px-2.5 py-0.5 rounded-md flex items-center gap-1.5">
+            <i class="fa-regular fa-compass"></i> Current Question
+          </span>
+          <div id="statusBadge" class="text-xs font-mono px-2.5 py-0.5 rounded-full bg-stone-900 text-stone-400 border border-hpBorder">
+            狀態: 準備中
+          </div>
+        </div>
+        <h2 id="questionDisplay" class="text-xl md:text-2xl font-bold text-stone-100 mt-3 tracking-tight font-subtle-serif">
+          等待房主出題中...
+        </h2>
+      </div>
+
+      <!-- 玩家答案輸入區 -->
+      <div id="answerInputBox" class="bg-hpCard border border-hpBorder rounded-xl p-4 shadow-md flex flex-col md:flex-row gap-3 items-center">
+        <span class="text-xs font-medium text-stone-300 shrink-0 flex items-center gap-1.5">
+          <i class="fa-regular fa-pen-to-square text-hpYellow"></i> 你的答案：
+        </span>
+        <input type="text" id="playerAnswerInput" placeholder="寫下心電感應答案..." class="flex-grow w-full bg-stone-950 border border-hpBorder rounded-lg px-3.5 py-2 text-sm text-stone-100 focus:outline-none focus:border-hpYellow/60 transition">
+        <button onclick="submitAnswer()" class="w-full md:w-auto px-5 py-2 bg-hpYellow hover:bg-hpYellowHover text-stone-950 font-bold rounded-lg text-xs shrink-0 shadow transition">
+          傳送答案
+        </button>
+      </div>
+
+      <!-- 3D 卡片展示區 -->
+      <div>
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-xs font-bold text-stone-400 uppercase tracking-wider flex items-center gap-1.5 font-mono">
+            <i class="fa-solid fa-layer-group text-hpYellow/80"></i> Answer Cards
+          </h3>
+          <span id="playerCount" class="text-xs text-stone-500 font-mono">已連線: 0 人</span>
+        </div>
+
+        <div id="cardsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5">
+          <!-- 3D 翻轉卡片由 JS 動態繪製 -->
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- 頁腳 -->
+  <footer class="border-t border-hpBorder/60 bg-hpDark py-4 text-center text-xs text-stone-600 font-mono">
+    <p>Telepathy App &bull; Subtle Yellow & Graphite Black Palette</p>
+  </footer>
+
+  <!-- 邏輯腳本 -->
+  <script>
+    const SHEET_NAME = 'TelepathyData';
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbw7bGFuSGu_nD-Od4RYu-q7o9umbpCWSYZbNED3HgUgLLbAKDx4NpenCEg-263jCHVe/exec";
+
+    let currentRoom = "";
+    let playerName = "";
+    let gameState = { status: "setup", question: "", answers: {} };
+    let pollingTimer = null;
+    let logoClickCount = 0;
+
+    // 連續點擊 Logo 3 次開啟/關閉房主控制台
+    document.getElementById('logoBadge').addEventListener('click', () => {
+      logoClickCount++;
+      if (logoClickCount >= 3) {
+        toggleHostPanel(true);
+        alert('⚡ 已喚醒隱藏房主控制台！');
+        logoClickCount = 0;
+      }
+    });
+
+    function toggleHostPanel(forceShow = false) {
+      const panel = document.getElementById('hostPanel');
+      if (forceShow) {
+        panel.classList.remove('hidden');
+      } else {
+        panel.classList.toggle('hidden');
+      }
+    }
+
+    // 加入房間
+    function joinRoom() {
+      const roomInput = document.getElementById('inputRoom').value.trim();
+      const nameInput = document.getElementById('inputPlayer').value.trim();
+
+      if (!roomInput || !nameInput) {
+        alert('請填寫房間代碼與姓名！');
+        return;
+      }
+
+      currentRoom = roomInput;
+      playerName = nameInput;
+
+      document.getElementById('currentRoomDisplay').innerText = currentRoom;
+      document.getElementById('roomTag').classList.remove('hidden');
+      document.getElementById('loginSection').classList.add('hidden');
+      document.getElementById('gameSection').classList.remove('hidden');
+
+      fetchGameState();
+      if (pollingTimer) clearInterval(pollingTimer);
+      pollingTimer = setInterval(fetchGameState, 2000);
+    }
+
+    // GET 輪詢資料
+    async function fetchGameState() {
+      if (!currentRoom) return;
+
+      try {
+        const response = await fetch(`${GAS_API_URL}?room=${encodeURIComponent(currentRoom)}`);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        gameState = data;
+        renderUI();
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    }
+
+    // 渲染 UI 畫面
+    function renderUI() {
+      // 1. 題目
+      document.getElementById('questionDisplay').innerText = gameState.question || "等待房主出題中...";
+
+      // 2. 狀態標籤
+      const sBadge = document.getElementById('statusBadge');
+      if (gameState.status === 'setup') {
+        sBadge.innerText = "狀態：準備中";
+        sBadge.className = "text-xs font-mono px-2.5 py-0.5 rounded-full bg-stone-900 text-stone-400 border border-hpBorder";
+      } else if (gameState.status === 'playing') {
+        sBadge.innerText = "狀態：作答中 (蓋牌)";
+        sBadge.className = "text-xs font-mono px-2.5 py-0.5 rounded-full bg-hpYellow/10 text-hpYellow border border-hpYellow/30";
+      } else if (gameState.status === 'revealed') {
+        sBadge.innerText = "狀態：已開牌 🎴";
+        sBadge.className = "text-xs font-mono px-2.5 py-0.5 rounded-full bg-hpYellow text-stone-950 font-bold border border-hpYellow";
+      }
+
+      // 3. 渲染卡片
+      renderCards();
+    }
+
+    // 動態繪製 3D 卡片
+    function renderCards() {
+      const cardsGrid = document.getElementById('cardsGrid');
+      const answers = gameState.answers || {};
+      const playerNames = Object.keys(answers);
+      const isRevealed = (gameState.status === 'revealed');
+
+      document.getElementById('playerCount').innerText = `已連線: ${playerNames.length} 人`;
+
+      if (playerNames.length === 0) {
+        cardsGrid.innerHTML = `
+          <div class="col-span-full py-8 text-center text-stone-500 text-xs font-mono bg-hpCard border border-dashed border-hpBorder rounded-xl">
+            暫無玩家提交答案...
+          </div>
+        `;
+        return;
+      }
+
+      let htmlContent = '';
+
+      playerNames.forEach(name => {
+        const answerText = answers[name];
+        const isSelf = (name === playerName);
+        
+        htmlContent += `
+          <div class="perspective-1000 w-full h-40">
+            <div class="card-inner relative w-full h-full duration-700 transform-style-3d transition-transform ${isRevealed ? 'rotate-y-180' : ''}">
+              
+              <!-- 正面：深灰卡片 + 閃電圖示 (蓋牌) -->
+              <div class="backface-hidden absolute inset-0 bg-hpCard border ${isSelf ? 'border-hpYellow ring-1 ring-hpYellow/40' : 'border-hpBorder'} rounded-xl p-3.5 flex flex-col justify-between shadow-md">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-semibold text-stone-200 truncate">${name}${isSelf ? ' (你)' : ''}</span>
+                  <span class="text-xs text-hpYellow/80"><i class="fa-solid fa-lock"></i></span>
+                </div>
+                <div class="my-auto text-center">
+                  <div class="w-8 h-8 mx-auto rounded-lg bg-stone-950 flex items-center justify-center text-hpYellow text-xs mb-1 border border-hpBorder">
+                    <i class="fa-solid fa-bolt"></i>
+                  </div>
+                  <span class="text-[11px] text-stone-400 font-medium">已傳送答案</span>
+                </div>
+                <div class="text-[10px] text-stone-600 font-mono text-center border-t border-hpBorder/60 pt-1">
+                  Ready to Reveal
+                </div>
+              </div>
+
+              <!-- 背面：經典金黃背景 + 深色文字 (開牌 reveal) -->
+              <div class="backface-hidden rotate-y-180 absolute inset-0 bg-hpYellow text-stone-950 border-2 border-hpYellowHover rounded-xl p-3.5 flex flex-col justify-between shadow-xl">
+                <div class="flex items-center justify-between border-b border-stone-950/15 pb-1">
+                  <span class="text-xs font-bold text-stone-950 tracking-tight truncate">${name}</span>
+                  <span class="text-[9px] font-black uppercase bg-stone-950 text-hpYellow px-1.5 py-0.5 rounded">ANSWER</span>
+                </div>
+                <div class="text-sm font-bold text-center my-auto px-1 break-words leading-tight text-stone-950">
+                  "${answerText}"
+                </div>
+                <div class="text-[9px] text-stone-900/70 font-mono text-center font-semibold">
+                  Revealed
+                </div>
+              </div>
+
+            </div>
+          </div>
+        `;
+      });
+
+      cardsGrid.innerHTML = htmlContent;
+    }
+
+    // 發送 POST 至 GAS
+    async function postToGAS(payload) {
+      try {
+        await fetch(GAS_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        fetchGameState();
+      } catch (error) {
+        console.error("POST Error:", error);
+      }
+    }
+
+    // 玩家提交答案
+    function submitAnswer() {
+      const answerInput = document.getElementById('playerAnswerInput');
+      const val = answerInput.value.trim();
+      if (!val) {
+        alert('請輸入答案！');
+        return;
+      }
+
+      postToGAS({
+        room: currentRoom,
+        action: 'submit_answer',
+        playerName: playerName,
+        answer: val
+      });
+      alert('答案已傳送！');
+    }
+
+    // 房主設定題目
+    function setQuestion() {
+      const qInput = document.getElementById('hostQuestionInput');
+      const question = qInput.value.trim();
+      if (!question) {
+        alert('請輸入題目內容！');
+        return;
+      }
+
+      postToGAS({
+        room: currentRoom,
+        action: 'set_question',
+        question: question
+      });
+      qInput.value = '';
+    }
+
+    // 房主開牌
+    function revealAnswers() {
+      postToGAS({
+        room: currentRoom,
+        action: 'reveal'
+      });
+    }
+
+    // 房主重設房間
+    function resetGame() {
+      if (!confirm('確定要重設房間並清除所有答案嗎？')) return;
+      postToGAS({
+        room: currentRoom,
+        action: 'reset'
+      });
+    }
+  </script>
+</body>
+</html>
